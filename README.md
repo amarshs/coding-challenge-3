@@ -1,3 +1,5 @@
+![screencapture-vigilant-spoon-wrrgjgx94xr4hg9xv-8501-app-github-dev-2023-12-01-19_52_56](https://github.com/amarshs/coding-challenge-3/assets/152249539/a500a41d-ecc5-4cb7-8378-e83a709f438d)
+
 1. part1.ipynb file has code of web scraping, pushing into snowflake, transformations in snowflake, pulling from snowflake
 2. coding_challenge_3.py has pulling from snowflake and streamlit. It can be run on its own.
    
