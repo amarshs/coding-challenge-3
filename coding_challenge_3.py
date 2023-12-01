@@ -19,15 +19,15 @@ snowflake_params = {
 
 conn = snowflake.connector.connect(**snowflake_params)
 cur = conn.cursor()
-cur.execute('SELECT * FROM BOOKS')
+cur.execute('SELECT * FROM TRANSFORMED_BOOKS')
 result = cur.fetchall()
 column_names = [desc[0] for desc in cur.description]
 df = pd.DataFrame(result, columns=column_names)
 # print(df)
 conn.close()
-df.to_csv("book_data_transformed.csv")
-
-# # Streamlit Deployment
+# df.to_csv("book_data_transformed.csv")
+# print(df.dtypes)
+# # # Streamlit Deployment
 
 # # Load the data
 # df = pd.read_csv('book_data_transformed.csv')
@@ -71,21 +71,10 @@ with col5:
     top_rated_books = df[df['RATING'] == 5].sort_values(by='PRICE').head(5)
     st.table(top_rated_books[['TITLE', 'RATING', 'PRICE', 'AVAILABILITY']])
 
-# Display the "Book Data" table with reduced height and filter option
+# Display the "Book Data" table with reduced height
 with col6:
     st.subheader("Book Data:")
-    
-    # Sidebar for filtering options
-    with st.sidebar:
-        st.sidebar.subheader("Filter Options:")
-        min_price = st.sidebar.slider("Minimum Price", min_value=df['PRICE'].min(), max_value=df['PRICE'].max(), value=df['PRICE'].min())
-        max_price = st.sidebar.slider("Maximum Price", min_value=df['PRICE'].min(), max_value=df['PRICE'].max(), value=df['PRICE'].max())
-    
-    # Filter the dataframe based on user's selection
-    filtered_df = df[(df['PRICE'] >= min_price) & (df['PRICE'] <= max_price)]
-    
-    # Display the filtered dataframe
-    st.dataframe(filtered_df, height=205, width=1000)
+    st.dataframe(df, height=205, width= 1000)
 
 # Create a layout with 3 columns for histogram, pie chart, and line plot
 col7, col8, col9 = st.columns([1, 1, 1])
