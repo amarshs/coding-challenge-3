@@ -8,151 +8,26 @@ from snowflake.connector.pandas_tools import write_pandas
 import streamlit as st
 import matplotlib.pyplot as plt
 
-
-#  Data Scraping
-
-base_url = "https://books.toscrape.com/catalogue/page-{}.html"
-page_number = 1
-count = 1
-
-# Open a CSV file for writing
-with open('book_data.csv', 'w', newline='', encoding='utf-8') as csvfile:
-    # Create a CSV writer
-    csv_writer = csv.writer(csvfile)
-
-    # Write header row
-    csv_writer.writerow(["Title", "Rating", "Price", "Availability"])
-
-    while True:
-        url = base_url.format(page_number)
-
-        # Send an HTTP request to the URL
-        response = requests.get(url)
-
-        # Check if the request was successful (status code 200)
-        if response.status_code == 200:
-            # Parse the HTML content of the page
-            soup = BeautifulSoup(response.content, 'html.parser')
-
-            # Find all the book containers on the page
-            book_containers = soup.find_all('article', class_='product_pod')
-
-            # If no books are found, break the loop
-            if not book_containers:
-                break
-
-            # Loop through each book container and extract information
-            for book in book_containers:
-                # Extract title
-                title = book.h3.a['title']
-
-                # Extract rating
-                rating = book.p['class'][1]
-
-
-                # Extract price
-                price = book.select('div p.price_color')[0].text
-
-                # Extract availability
-                availability = book.select('div p.instock.availability')[0].text.strip()
-
-                # Write the extracted information to the CSV file
-                csv_writer.writerow([title, rating, price, availability])
-
-                # Print the extracted information
-                # print(f"Book No: {count}")
-                # print(f"Title: {title}")
-                # print(f"Rating: {rating}")
-                # print(f"Price: {price}")
-                # print(f"Availability: {availability}")
-                # print("-" * 40)
-
-                # Increment the book count
-                count += 1
-
-            # Move to the next page
-            page_number += 1
-
-        else:
-            # print(f"Failed to retrieve the page. Status code: {response.status_code}")
-            break
-
-# Connect to snowflake
-## Phase I: Truncate/Delete the current data in the table
-# The connector...
-conn = snow.connect(user="AMARSH",
-   password= "SQtcfg655DgL9A",
-   account="ytvggyp-ay55760",
-)
-# (FYI, if you don't want to hard code your password into a script, there are
-# some other options for security.)
-
-conn.cursor().execute("CREATE WAREHOUSE IF NOT EXISTS snowflake")
-conn.cursor().execute("USE WAREHOUSE snowflake")
-conn.cursor().execute("CREATE DATABASE IF NOT EXISTS blend")
-conn.cursor().execute("USE DATABASE blend")
-conn.cursor().execute("CREATE SCHEMA IF NOT EXISTS coding_challenge")
-conn.cursor().execute("USE SCHEMA coding_challenge")
-
-original = r"book_data.csv" # <- Replace with your path.
-delimiter = "," # Replace if you're using a different delimiter.
-
-# Get it as a pandas dataframe.
-total = pd.read_csv(original, sep = delimiter)
-total.rename(columns={"Title": "TITLE",
-                      "Rating": "RATING",
-                      "Price": "PRICE",
-                      "Availability": "AVAILABILITY"},
-                       inplace=True)
-conn.cursor().execute("CREATE OR REPLACE TABLE books (Title STRING, Rating STRING, Price STRING, Availability STRING)")
-
-write_pandas(conn, total, 'BOOKS')
-sql_code = """
-UPDATE BOOKS
-SET 
-  PRICE = CAST(SUBSTRING(PRICE, 2) AS FLOAT),
-  AVAILABILITY = CASE WHEN AVAILABILITY = 'In stock' THEN 1 ELSE 0 END,
-  RATING = CASE
-              WHEN RATING = 'One' THEN 1
-              WHEN RATING = 'Two' THEN 2
-              WHEN RATING = 'Three' THEN 3
-              WHEN RATING = 'Four' THEN 4
-              WHEN RATING = 'Five' THEN 5
-              ELSE NULL
-           END;
-"""
-# Execute the SQL code
-conn.cursor().execute(sql_code)
-
-## Phase III: Turn off the warehouse.
-# Create a cursor object.
-cur = conn.cursor()
-cur.execute("ALTER WAREHOUSE snowflake SUSPEND")
-
-# Close your cursor and your connection.
-cur.close()
-conn.close()
-
 # Pull from snowflake
 
-snowflake_params = {
-    'user':"AMARSH",
-   'password':"SQtcfg655DgL9A",
-   'account':"ytvggyp-ay55760",
-    'warehouse': 'snowflake',
-    'database': 'blend',
-    'schema': 'coding_challenge',
-}
+# snowflake_params = {
+#     'user':"AMARSH",
+#    'password':"SQtcfg655DgL9A",
+#    'account':"ytvggyp-ay55760",
+#     'warehouse': 'snowflake',
+#     'database': 'blend',
+#     'schema': 'coding_challenge',
+# }
 
-conn = snowflake.connector.connect(**snowflake_params)
-cur = conn.cursor()
-cur.execute('SELECT * FROM BOOKS')
-result = cur.fetchall()
-column_names = [desc[0] for desc in cur.description]
-df = pd.DataFrame(result, columns=column_names)
-# print(df)
-conn.close()
-df.to_csv("book_data_transformed.csv")
+# conn = snowflake.connector.connect(**snowflake_params)
+# cur = conn.cursor()
+# cur.execute('SELECT * FROM BOOKS')
+# result = cur.fetchall()
+# column_names = [desc[0] for desc in cur.description]
+# df = pd.DataFrame(result, columns=column_names)
+# # print(df)
+# conn.close()
+# df.to_csv("book_data_transformed.csv")
 
 # Streamlit Deployment
 
