@@ -68,13 +68,20 @@ col5, col6 = st.columns(2)
 # Display the 5-star rated books with minimum cost in a table
 with col5:
     st.subheader("5-Star Rated Books with Minimum Cost:")
-    top_rated_books = df[df['RATING'] == 5].sort_values(by='PRICE').head(5)
+    top_rated_books = df[df['RATING'] == 5].sort_values(by='PRICE').head(7)
     st.table(top_rated_books[['TITLE', 'RATING', 'PRICE', 'AVAILABILITY']])
 
-# Display the "Book Data" table with reduced height
+# Display the "Book Data" table with reduced height and rating filter options
 with col6:
     st.subheader("Book Data:")
-    st.dataframe(df, height=205, width= 1000)
+    
+    # Filter the DataFrame based on selected ratings
+    selected_ratings = st.multiselect("Select Ratings:", [1, 2, 3, 4, 5], default=[1, 2, 3, 4, 5])
+    filtered_df = df[df['RATING'].isin(selected_ratings)]
+
+    # Display the filtered DataFrame
+    st.dataframe(filtered_df, height=205, width=1000)
+
 
 # Create a layout with 3 columns for histogram, pie chart, and line plot
 col7, col8, col9 = st.columns([1, 1, 1])
