@@ -1,3 +1,4 @@
+# Import necessary libraries
 import csv
 import pandas as pd
 import snowflake
@@ -6,12 +7,12 @@ from snowflake.connector.pandas_tools import write_pandas
 import streamlit as st
 import matplotlib.pyplot as plt
 
-# Pull from snowflake
+# Connect to Snowflake and fetch data
 
 snowflake_params = {
-    'user':"AMARSH",
-   'password':"SQtcfg655DgL9A",
-   'account':"ytvggyp-ay55760",
+    'user': "AMARSH",
+    'password': "SQtcfg655DgL9A",
+    'account': "ytvggyp-ay55760",
     'warehouse': 'snowflake',
     'database': 'blend',
     'schema': 'coding_challenge',
@@ -23,14 +24,9 @@ cur.execute('SELECT * FROM TRANSFORMED_BOOKS')
 result = cur.fetchall()
 column_names = [desc[0] for desc in cur.description]
 df = pd.DataFrame(result, columns=column_names)
-# print(df)
 conn.close()
-# df.to_csv("book_data_transformed.csv")
-# print(df.dtypes)
-# # # Streamlit Deployment
 
-# # Load the data
-# df = pd.read_csv('book_data_transformed.csv')
+# Streamlit Deployment
 
 # Set page title and color
 st.set_page_config(page_title="Online Bookstore Dashboard", page_icon="📚", layout="wide", initial_sidebar_state="expanded")
@@ -60,7 +56,7 @@ with col3:
 with col4:
     st.subheader("Average Rating of a Book")
     st.markdown("<div style='text-align: center; border: 1px solid #d3d3d3; padding: 10px;'>"
-                f"<p style='font-size: 24px;'>{df['RATING'].mean():.2f}</p></div>", unsafe_allow_html=True)
+                f"<p style='font-size: 24px;'>{df['RATING'].mean():.2f}/{5}</p></div>", unsafe_allow_html=True)
 
 # Create a layout with 2 columns for the tables
 col5, col6 = st.columns(2)
@@ -69,6 +65,10 @@ col5, col6 = st.columns(2)
 with col5:
     st.subheader("5-Star Rated Books with Minimum Cost:")
     top_rated_books = df[df['RATING'] == 5].sort_values(by='PRICE').head(7)
+    
+    # Format the 'PRICE' column to have only two decimal places
+    top_rated_books['PRICE'] = top_rated_books['PRICE'].apply(lambda x: f"${x:.2f}")
+    
     st.table(top_rated_books[['TITLE', 'RATING', 'PRICE', 'AVAILABILITY']])
 
 # Display the "Book Data" table with reduced height and rating filter options
@@ -78,13 +78,16 @@ with col6:
     # Filter the DataFrame based on selected ratings
     selected_ratings = st.multiselect("Select Ratings:", [1, 2, 3, 4, 5], default=[1, 2, 3, 4, 5])
     filtered_df = df[df['RATING'].isin(selected_ratings)]
+    
+    # Format the 'PRICE' column with a dollar sign before displaying
+    filtered_df['PRICE'] = filtered_df['PRICE'].apply(lambda x: f"${x:.2f}")
 
     # Display the filtered DataFrame
     st.dataframe(filtered_df, height=205, width=1000)
 
-
 # Create a layout with 3 columns for histogram, pie chart, and line plot
 col7, col8, col9 = st.columns([1, 1, 1])
+
 # Display histogram for the number of books in each price range
 with col7:
     st.subheader("Histogram for Book Prices")
@@ -98,7 +101,7 @@ with col7:
     # Annotate each bar with the number of books
     for count, bin_edge in zip(counts, bins[:-1]):
         if count > 0:
-            ax.text(bin_edge + 0.5, count, str(int(count)), ha='center', va='bottom', fontsize=8)
+            ax.text(bin_edge + 0.5, count, str(int(count)), ha='center', va='bottom', fontsize=6)
 
     # Use st.pyplot() to display the plot with adjusted width and height
     st.pyplot(fig, use_container_width=True)  # Adjust the width and height as needed
@@ -112,7 +115,6 @@ with col8:
     ax.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
     st.pyplot(fig, use_container_width=True)
 
-# Display price vs average ratings plot
 # Display line plot for average price vs ratings
 with col9:
     st.subheader("Line Plot for Average Price vs Ratings")
@@ -121,18 +123,23 @@ with col9:
     avg_price_by_rating = df.groupby('RATING')['PRICE'].mean()
 
     # Create a line plot
-    fig, ax = plt.subplots(figsize=(6, 4))
+    fig, ax = plt.subplots(figsize=(6, 4.3))
     ax.plot(avg_price_by_rating.index, avg_price_by_rating.values, marker='o', linestyle='-')
     
+    # Annotate each point with its average price
+    for x, y in zip(avg_price_by_rating.index, avg_price_by_rating.values):
+        ax.text(x, y, f'${y:.2f}', ha='left', va='bottom', fontsize=8)
+
     # Customize the plot
     ax.set_xlabel('Ratings', fontsize=12)
-    ax.set_ylabel('Average Price', fontsize=12)
+    ax.set_ylabel('Average Price ($)', fontsize=12)
     ax.set_title('Average Price vs Ratings', fontsize=14)
     
     # Set x-axis ticks to only show values 1 through 5
     ax.set_xticks([1, 2, 3, 4, 5])
+
+    # Format y-axis labels with two decimal places
+    ax.yaxis.set_major_formatter('{x:.2f}')
     
     # Use st.pyplot() to display the plot with adjusted width and height
     st.pyplot(fig, use_container_width=True)
-
-
