@@ -1,7 +1,3 @@
-# Welcome to streamlit
+part1.ipynb file has code of web scraping, pushing into snowflake, transformations in snowflake, pulling from snowflake
+coding_challenge_3.py has pulling from snowflake and streamlit. It can be run on its own.
 
-This is the app you get when you run `streamlit hello`, extracted as its own app.
-
-Edit [Hello.py](./Hello.py) to customize this app to your heart's desire. ❤️
-
-Check it out on [Streamlit Community Cloud](https://st-hello-app.streamlit.app/)
