@@ -8,29 +8,29 @@ import matplotlib.pyplot as plt
 
 # Pull from snowflake
 
-# snowflake_params = {
-#     'user':"AMARSH",
-#    'password':"SQtcfg655DgL9A",
-#    'account':"ytvggyp-ay55760",
-#     'warehouse': 'snowflake',
-#     'database': 'blend',
-#     'schema': 'coding_challenge',
-# }
+snowflake_params = {
+    'user':"AMARSH",
+   'password':"SQtcfg655DgL9A",
+   'account':"ytvggyp-ay55760",
+    'warehouse': 'snowflake',
+    'database': 'blend',
+    'schema': 'coding_challenge',
+}
 
-# conn = snowflake.connector.connect(**snowflake_params)
-# cur = conn.cursor()
-# cur.execute('SELECT * FROM BOOKS')
-# result = cur.fetchall()
-# column_names = [desc[0] for desc in cur.description]
-# df = pd.DataFrame(result, columns=column_names)
-# # print(df)
-# conn.close()
-# df.to_csv("book_data_transformed.csv")
+conn = snowflake.connector.connect(**snowflake_params)
+cur = conn.cursor()
+cur.execute('SELECT * FROM BOOKS')
+result = cur.fetchall()
+column_names = [desc[0] for desc in cur.description]
+df = pd.DataFrame(result, columns=column_names)
+# print(df)
+conn.close()
+df.to_csv("book_data_transformed.csv")
 
-# Streamlit Deployment
+# # Streamlit Deployment
 
-# Load the data
-df = pd.read_csv('book_data_transformed.csv')
+# # Load the data
+# df = pd.read_csv('book_data_transformed.csv')
 
 # Set page title and color
 st.set_page_config(page_title="Online Bookstore Dashboard", page_icon="📚", layout="wide", initial_sidebar_state="expanded")
