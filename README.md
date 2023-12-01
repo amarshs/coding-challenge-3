@@ -31,4 +31,3 @@ Regarding the files:
 - book.csv has the data directly after web scraping without any transformations
 - book_data_transformed is data pulled from snowflake after transformations
 - deployment.txt is the public accessable link for the dashboard
-- 
