@@ -1,2 +1,5 @@
 The Deployment link:
 https://coding-challenge-3-ymjmag22eectpmjrmappedw.streamlit.app/
+
+Github link for the project:
+https://github.com/amarshs/coding-challenge-3

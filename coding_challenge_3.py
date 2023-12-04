@@ -42,21 +42,21 @@ col2, col3, col4 = st.columns([1, 1, 1])
 with col2:
     total_books = df.shape[0]
     total_available_books = df['AVAILABILITY'].sum()
-    st.subheader("Total Available Books")
     st.markdown("<div style='text-align: center; border: 1px solid #d3d3d3; padding: 10px;'>"
-                f"<p style='font-size: 24px;'>{total_available_books}/{total_books}</p></div>", unsafe_allow_html=True)
+                "<h3>Total Available Books</h3>"
+                f"<p style='font-size: 24px;'><span></span> {total_available_books}/{total_books}📚</p></div>", unsafe_allow_html=True)
 
 # Display the average cost of a book
 with col3:
-    st.subheader("Average Cost of a Book")
     st.markdown("<div style='text-align: center; border: 1px solid #d3d3d3; padding: 10px;'>"
-                f"<p style='font-size: 24px;'>${df['PRICE'].mean():.2f}</p></div>", unsafe_allow_html=True)
+                "<h3>Average Cost of a Book</h3>"
+                f"<p style='font-size: 24px;'>£{df['PRICE'].mean():.2f} <span>&#x1F4B0;</span></p></div>", unsafe_allow_html=True)
 
 # Display the average rating of a book
 with col4:
-    st.subheader("Average Rating of a Book")
     st.markdown("<div style='text-align: center; border: 1px solid #d3d3d3; padding: 10px;'>"
-                f"<p style='font-size: 24px;'>{df['RATING'].mean():.2f}/{5}</p></div>", unsafe_allow_html=True)
+                "<h3>Average Rating of a Book</h3>"
+                f"<p style='font-size: 24px;'>{df['RATING'].mean():.2f}/{5} <span>&#x2B50;</span></p></div>", unsafe_allow_html=True)
 
 # Create a layout with 2 columns for the tables
 col5, col6 = st.columns(2)
@@ -67,7 +67,7 @@ with col5:
     top_rated_books = df[df['RATING'] == 5].sort_values(by='PRICE').head(7)
     
     # Format the 'PRICE' column to have only two decimal places
-    top_rated_books['PRICE'] = top_rated_books['PRICE'].apply(lambda x: f"${x:.2f}")
+    top_rated_books['PRICE'] = top_rated_books['PRICE'].apply(lambda x: f"£{x:.2f}")
     
     st.table(top_rated_books[['TITLE', 'RATING', 'PRICE', 'AVAILABILITY']])
 
@@ -79,8 +79,8 @@ with col6:
     selected_ratings = st.multiselect("Select Ratings:", [1, 2, 3, 4, 5], default=[1, 2, 3, 4, 5])
     filtered_df = df[df['RATING'].isin(selected_ratings)]
     
-    # Format the 'PRICE' column with a dollar sign before displaying
-    filtered_df['PRICE'] = filtered_df['PRICE'].apply(lambda x: f"${x:.2f}")
+    # Format the 'PRICE' column with a pound sign before displaying
+    filtered_df['PRICE'] = filtered_df['PRICE'].apply(lambda x: f"£{x:.2f}")
 
     # Display the filtered DataFrame
     st.dataframe(filtered_df, height=205, width=1000)
@@ -94,7 +94,7 @@ with col7:
     fig, ax = plt.subplots(figsize=(6, 4))  # Adjust the figsize as needed
     counts, bins, _ = ax.hist(df['PRICE'], bins=range(int(df['PRICE'].min()), int(df['PRICE'].max()) + 2), edgecolor='black')
 
-    ax.set_xlabel('Price Range (Bins of $1)', fontsize=10)
+    ax.set_xlabel('Price Range (Bins of £1)', fontsize=10)
     ax.set_ylabel('Number of Books', fontsize=10)
     ax.set_title('Distribution of Book Prices', fontsize=12)
 
@@ -128,18 +128,18 @@ with col9:
     
     # Annotate each point with its average price
     for x, y in zip(avg_price_by_rating.index, avg_price_by_rating.values):
-        ax.text(x, y, f'${y:.2f}', ha='left', va='bottom', fontsize=8)
+        ax.text(x, y, f'£{y:.2f}', ha='left', va='bottom', fontsize=8)
 
     # Customize the plot
     ax.set_xlabel('Ratings', fontsize=12)
-    ax.set_ylabel('Average Price ($)', fontsize=12)
+    ax.set_ylabel('Average Price (£)', fontsize=12)
     ax.set_title('Average Price vs Ratings', fontsize=14)
     
     # Set x-axis ticks to only show values 1 through 5
     ax.set_xticks([1, 2, 3, 4, 5])
 
     # Format y-axis labels with two decimal places
-    ax.yaxis.set_major_formatter('{x:.2f}')
+    ax.yaxis.set_major_formatter('£{x:.2f}')
     
     # Use st.pyplot() to display the plot with adjusted width and height
     st.pyplot(fig, use_container_width=True)
