@@ -1,5 +1,6 @@
-1. part1.ipynb file has code of web scraping, pushing into snowflake, transformations in snowflake, pulling from snowflake
-2. coding_challenge_3.py has pulling from snowflake and streamlit. It can be run on its own.
+![screencapture-vigilant-spoon-wrrgjgx94xr4hg9xv-8501-app-github-dev-2023-12-01-19_52_56](https://github.com/amarshs/coding-challenge-3/assets/152249539/a500a41d-ecc5-4cb7-8378-e83a709f438d)
+
+This Dashbaord is part of Blend360 Coding Challenge 3
    
 Objective:
 Coding Challenge Problem Statement: Scraping and Dashboard Building using Streamlit 
@@ -23,3 +24,10 @@ Step 5: Deployment (25 points)
 Deploy the Streamlit application. Choose a suitable platform for deployment. Ensure that the deployed application is accessible through a web browser. 
  
 Note: Submit all the code files & other relevant files into your respective folders, and submit your deployment link in a text file. 
+
+Regarding the files:
+- part1.ipynb: file has code of web scraping, pushing into snowflake, transformations in snowflake, pulling from snowflake
+- coding_challenge_3.py: has pulling from snowflake and streamlit. It can be run on its own.
+- book.csv has the data directly after web scraping without any transformations
+- book_data_transformed is data pulled from snowflake after transformations
+- deployment.txt is the public accessable link for the dashboard
